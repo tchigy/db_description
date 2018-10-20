@@ -4,13 +4,26 @@ from odoo import service, http
 import os
 import io
 
+db_list_file_name = 'db_list'
+
+def ensure_db_list_file():
+    """ create the file if it's not there"""
+    addons_path = http.addons_manifest['db_description']['addons_path']
+    file_path = os.path.join(addons_path, 'db_description', db_list_file_name)
+    if os.path.exists(file_path) and not os.path.isfile(file_path):
+        import shutil
+        shutil.rmtree(file_path)
+    # make sure to create it if it's missing.
+    io.open(file_path, 'a').close()
+
 
 def get_dbs():
     """ return list of database with descriptions"""
+    ensure_db_list_file()
     dbs = {}
     if not 'db_description' in http.addons_manifest.iterkeys(): return dbs
     addons_path = http.addons_manifest['db_description']['addons_path']
-    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'r', encoding='utf-8') as f:
+    with io.open(os.path.join(addons_path, 'db_description', db_list_file_name), 'r', encoding='utf-8') as f:
         for l in f:
             if l and ':' in l:
                 db_info = l.split(':')
@@ -18,19 +31,33 @@ def get_dbs():
     return dbs
 
 
+def exist_description(db_name, description):
+    ensure_db_list_file()
+    addons_path = http.addons_manifest['db_description']['addons_path']
+    with io.open(os.path.join(addons_path, 'db_description', db_list_file_name), 'r', encoding='utf-8') as f:
+        for line in f:
+            db_info = line.split(':')
+            if len(db_info) >= 2 and db_info[1].strip().lower() == description.strip().lower() and db_info[0] != db_name:
+                return True
+
+
 def add_app(description, db_name):
     """ add database description to db_list file."""
+    ensure_db_list_file()
+    if exist_description(db_name, description):
+        raise Exception(u'You cannot use the same description for more than one database.')
     remove_app(db_name)
     addons_path = http.addons_manifest['db_description']['addons_path']
-    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'a', encoding='utf-8') as f:
-        f.write('%s:%s\n' % (db_name, description))
+    with io.open(os.path.join(addons_path, 'db_description', db_list_file_name), 'a', encoding='utf-8') as f:
+        f.write('\n%s:%s\n' % (db_name.strip(), description.strip()))
 
 
 def remove_app(db_name):
+    ensure_db_list_file()
     addons_path = http.addons_manifest['db_description']['addons_path']
-    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'r', encoding='utf-8') as f:
+    with io.open(os.path.join(addons_path, 'db_description', db_list_file_name), 'r', encoding='utf-8') as f:
         lines = f.readlines()
-    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'w', encoding='utf-8') as f:
+    with io.open(os.path.join(addons_path, 'db_description', db_list_file_name), 'w', encoding='utf-8') as f:
         for line in lines:
             if db_name != line.split(':')[0].strip() and ':' in line:
                 f.write(line)
@@ -51,11 +78,12 @@ def list_dbs(*args, **kwargs):
     return res_dict
 
 
-# change Odoo method with ours
+# change Odoo function
 service.db.list_dbs = list_dbs
 
 
-# handle drop method i could not Odoo method because it checks the database inside the code
+# handle drop method i could not avoid rewriting the code because
+# Odoo method checks the database inside the code
 def exp_drop(db_name):
     """ drop database and remove it's description."""
     if db_name not in (inf['db'] for inf in list_dbs(True)):

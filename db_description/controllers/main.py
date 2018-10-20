@@ -21,34 +21,10 @@ else:
 
 local_env = jinja2.Environment(loader=description_loader, autoescape=True)
 
-# using class inheritance didn't work for me TODO: find a way to use inheritance
-# use monkey patching
+# override necessary functions.
 
-# we need to load our manage not the one in web.
-def _render_template(self, **d):
-    d.setdefault('manage',True)
-    d['insecure'] = odoo.tools.config['admin_passwd'] == 'admin'
-    d['list_db'] = odoo.tools.config['list_db']
-    d['langs'] = odoo.service.db.exp_list_lang()
-    d['countries'] = odoo.service.db.exp_list_countries()
-    d['pattern'] = web.controllers.main.DBNAME_PATTERN  # keep the same pattern of odoo
-    # databases list
-    d['databases'] = []
-    try:
-        d['databases'] = http.db_list()
-    except odoo.exceptions.AccessDenied:
-        monodb = http.db_monodb()
-        if monodb:
-            d['databases'] = [monodb]
-    return local_env.get_template("database_manager.html").render(d)
-
-
-# change Odoo method with ours
-web.controllers.main.Database._render_template = _render_template
-
-
-# we need to handle db_filter to deal with two types of database list
-# list of db names and list of dictionaries.
+# by default db_filter expect a list of names now it can have
+# a list of names or list of dictionaries.
 def db_filter(dbs_list, httprequest=None):
     httprequest = httprequest or request.httprequest
     h = httprequest.environ.get('HTTP_HOST', '').split(':')[0]
@@ -79,11 +55,11 @@ def db_filter(dbs_list, httprequest=None):
     return dbs_names
 
 
-# change Odoo method with ours
+# change the function on http module.
 odoo.http.db_filter = db_filter
 
 
-# add db_name parameter to request to render it in login page
+# to show the description on the login page we need to add it to the request object.
 original_ensure_db = web.controllers.main.ensure_db
 from odoo.addons.db_description.service import db as local_db
 
@@ -115,21 +91,64 @@ def ensure_db(*args, **kwargs):
     return res
 
 
+# override it on main module
 web.controllers.main.ensure_db = ensure_db
 
 
-# add description parameter to database_list
-from odoo.addons.db_description.service import db
-original_create = web.controllers.main.Database.create
-@http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
-def create(self, master_pwd, description, name, lang, password, **post):
-    """ handle decritpion of the applications"""
-    db.add_app(description, name)
-    res = original_create(self, master_pwd, name, lang, password, **post)
-    return res
+class DB(web.controllers.main.Database):
 
-web.controllers.main.Database.create = create
+    @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
+    def create(self, master_pwd, description, name, lang, password, **post):
+        """ handle descritpion of the applications"""
+        try:
+            local_db.add_app(description, name)
+            res = super(DB, self).create(master_pwd, name, lang, password, **post)
+            return res
+        except Exception, e:
+            error = "Database creation error: %s" % (str(e) or repr(e))
+        return self._render_template(error=error)
 
+    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
+    def restore(self, master_pwd, description, backup_file, name, copy=False):
+        try:
+            local_db.add_app(description, name)
+            res = super(DB, self).restore(master_pwd, description, backup_file, name, copy)
+            return res
+        except Exception, e:
+            error = "Database restore error: %s" % (str(e) or repr(e))
+        return self._render_template(error=error)
+
+    @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
+    def duplicate(self, master_pwd, description, name, new_name):
+        """ handle description parameter."""
+        try:
+            local_db.add_app(description, new_name)
+            res = super(DB, self).duplicate(master_pwd, name, new_name)
+            return res
+        except Exception, e:
+            error = "Database restore error: %s" % (str(e) or repr(e))
+        return self._render_template(error=error)
+
+    def _render_template(self, **d):
+        """
+            I needed to change the env to local_env, i didn't want to change env on the main itself because
+            it can cause a side effect later.
+        """
+        d.setdefault('manage', True)
+        d['insecure'] = odoo.tools.config['admin_passwd'] == 'admin'
+        d['list_db'] = odoo.tools.config['list_db']
+        d['langs'] = odoo.service.db.exp_list_lang()
+        d['countries'] = odoo.service.db.exp_list_countries()
+        d['pattern'] = web.controllers.main.DBNAME_PATTERN  # keep the same pattern of odoo
+        # databases list
+        d['databases'] = []
+        try:
+            d['databases'] = http.db_list()
+        except odoo.exceptions.AccessDenied:
+            monodb = http.db_monodb()
+            if monodb:
+                d['databases'] = [monodb]
+        return local_env.get_template("database_manager.html").render(d)
 
 
 def db_monodb(httprequest=None):
@@ -159,5 +178,5 @@ def db_monodb(httprequest=None):
     return None
 
 http.db_monodb = db_monodb
-# web was imported first we change the reference of this variable ^_^
+# web is imported first: fix the reference of global variable ^_^
 web.controllers.main.db_monodb = db_monodb

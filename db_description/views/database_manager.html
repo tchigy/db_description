@@ -23,8 +23,10 @@
       $('body').on('click','.o_database_action', function(ev) {
           ev.preventDefault();
           var db = $(ev.currentTarget).data('db');
+          var db_name = $(ev.currentTarget).data('dbname');
           var target = $(ev.currentTarget).data('target');
           $(target).find('input[name=name]').val(db);
+          $(target).find('input[name=dbname]').val(dbname);
           $(target).modal();
       });
       // close modal on submit
@@ -218,6 +220,12 @@
             <label for="backup_file" class="control-label">File</label>
             <input id="backup_file" type="file" name="backup_file" class="required"/>
           </div>
+
+          <div class="form-group">
+            <label for="description" class="control-label">Application Name</label>
+            <input id="description" type="text" name="description" class="form-control" required="required" />
+          </div>
+
           <div class="form-group">
             <label for="name" class="control-label">Database Name</label>
             <input id="name" type="text" name="name" class="form-control" required="required" pattern="{{ pattern }}" title="Only alphanumerical characters, underscore, hyphen and dot are allowed"/>
@@ -290,6 +298,10 @@
           <div class="form-group">
             <label for="name" class="control-label">Database Name</label>
             <input id="name" type="text" name="name" class="form-control" required="required" readonly="readonly"/>
+          </div>
+          <div class="form-group">
+            <label for="description" class="control-label">New Application Name</label>
+            <input id="description" type="text" name="description" class="form-control" required="required"/>
           </div>
           <div class="form-group">
             <label for="new_name" class="control-label">New Name</label>
