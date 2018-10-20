@@ -13,16 +13,27 @@ def get_dbs():
     with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'r', encoding='utf-8') as f:
         for l in f:
             if l and ':' in l:
-                dbname, description = l.split(':')
-                dbs[dbname] = description
+                db_info = l.split(':')
+                dbs[db_info[0]] = db_info[1]
     return dbs
 
 
-def add_app(description, name):
+def add_app(description, db_name):
     """ add database description to db_list file."""
+    remove_app(db_name)
     addons_path = http.addons_manifest['db_description']['addons_path']
     with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'a', encoding='utf-8') as f:
-        f.write('\n%s:%s\n' % (name, description))
+        f.write('%s:%s\n' % (db_name, description))
+
+
+def remove_app(db_name):
+    addons_path = http.addons_manifest['db_description']['addons_path']
+    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    with io.open(os.path.join(addons_path, 'db_description', 'db_list'), 'w', encoding='utf-8') as f:
+        for line in lines:
+            if db_name != line.split(':')[0].strip() and ':' in line:
+                f.write(line)
 
 
 # override the list_dbs
@@ -63,6 +74,7 @@ def exp_drop(db_name):
             raise Exception("Couldn't drop database %s: %s" % (db_name, e))
         else:
             service.db._logger.info('DROP DB: %s', db_name)
+            remove_app(db_name)
 
 
 service.db.exp_drop = exp_drop

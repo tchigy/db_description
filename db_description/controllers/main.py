@@ -122,7 +122,7 @@ web.controllers.main.ensure_db = ensure_db
 from odoo.addons.db_description.service import db
 original_create = web.controllers.main.Database.create
 @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
-def create(self, master_pwd,description, name, lang, password, **post):
+def create(self, master_pwd, description, name, lang, password, **post):
     """ handle decritpion of the applications"""
     db.add_app(description, name)
     res = original_create(self, master_pwd, name, lang, password, **post)
@@ -155,7 +155,7 @@ def db_monodb(httprequest=None):
 
     # if there is only one possible db, we take that one
     if len(dbs) == 1:
-        return dbs[0] if isinstance(dbs[0], str, unicode) else dbs[0]['db']
+        return dbs[0] if isinstance(dbs[0], (str, unicode)) else dbs[0]['db']
     return None
 
 http.db_monodb = db_monodb

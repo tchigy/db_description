@@ -14,10 +14,11 @@ application in any laguage like Arabic, chines ..etc.
     """,
     'category': 'Web',
     'website': '',
-    'depends' : ['web'],
+    'depends': ['web'],
     'data': [
+        'views/webclient_templates.xml',
     ],
     'installable': True,
     'application': True,
-    'auto_install': False,
+    'auto_install': True,
 }
