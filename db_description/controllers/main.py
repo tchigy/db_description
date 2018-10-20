@@ -139,6 +139,10 @@ class DB(web.controllers.main.Database):
             error = "Database restore error: %s" % (str(e) or repr(e))
         return self._render_template(error=error)
 
+    @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
+    def drop(self, master_pwd, name, dbname):
+        return super(DB, self).drop(master_pwd, name)
+
     def _render_template(self, **d):
         """
             I needed to change the env to local_env, i didn't want to change env on the main itself because
