@@ -2,7 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name' : 'Database Description',
-    'version' : '0.1',
+    'author': 'Soltani charif',
+    'version' : '1.0',
     'summary': 'Add description to database',
     'sequence': 30,
     'description': """
