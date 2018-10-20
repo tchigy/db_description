@@ -106,6 +106,16 @@ class DB(web.controllers.main.Database):
             return res
         except Exception, e:
             error = "Database creation error: %s" % (str(e) or repr(e))
+        return self._render_template(error=error)\
+
+    @http.route('/web/database/rename', type='http', auth="none", methods=['POST'], csrf=False)
+    def rename(self, master_pwd,name, new_dbname, dbname, **post):
+        """ handle descritpion of the applications"""
+        try:
+            web.controllers.main.dispatch_rpc('db', 'rename_app', [master_pwd, name, dbname, new_dbname])
+            return http.local_redirect('/web/database/manager')
+        except Exception, e:
+            error = "Application rename error: %s" % (str(e) or repr(e))
         return self._render_template(error=error)
 
     @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
