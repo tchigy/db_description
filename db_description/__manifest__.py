@@ -16,6 +16,9 @@ application in any laguage like Arabic, chines ..etc.
     'category': 'Web',
     'website': '',
     'depends': ['web'],
+    'images': [
+        'static/src/img/main_screenshot.png'
+    ],
     'data': [
         'views/webclient_templates.xml',
     ],
