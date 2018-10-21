@@ -19,7 +19,7 @@ This terms to translate them to any other language you can't this module helps y
     ],
     'data': [
     ],
-    'installable': False,
+    'installable': True,
     'application': True,
     'auto_install': False,
 }
