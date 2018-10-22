@@ -63,8 +63,13 @@ def new_push_translation():
             sanitized_term = etree.tostring(node, encoding='UTF-8', method='text')
         except etree.ParseError:
             pass
-        # remove non-alphanumeric unicode
-        sanitized_term = re.sub(r'\W+', '', sanitized_term, flags=re.UNICODE)
+        from  odoo.http import request
+        if request.env.get('translate.dummy', 0) != 0:
+             # remove non-alphanumeric unicode
+             sanitized_term = re.sub(r'\W+', '', sanitized_term, flags=re.UNICODE)
+        else:
+            # remove non-alphanumeric No unicode flag
+            sanitized_term = re.sub(r'\W+', '', sanitized_term)
         if not sanitized_term or len(sanitized_term) <= 1:
             return
 
@@ -81,3 +86,11 @@ origin_method = tools.trans_generate
 trans_generate = replace_inner_function(origin_method, push_translation)
 # now correct the reference in trans_export because it references to original method.
 tools.trans_export.func_globals['trans_generate'] = trans_generate
+
+
+from odoo import models
+
+class DummyModel(models.AbstractModel):
+    """  just a dummy model to check if the module is installed instead of using search method to check
+        for every terms that we want to export !!!! """
+    _name = 'translate.dummy'
