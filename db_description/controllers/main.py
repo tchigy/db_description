@@ -20,6 +20,7 @@ else:
     description_loader = jinja2.PackageLoader('odoo.addons.db_description', "views")
 
 local_env = jinja2.Environment(loader=description_loader, autoescape=True)
+local_env = jinja2.Environment(loader=description_loader, autoescape=True)
 
 # override necessary functions.
 
@@ -129,7 +130,7 @@ class DB(web.controllers.main.Database):
         return self._render_template(error=error)
 
     @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
-    def duplicate(self, master_pwd, description, name, new_name):
+    def duplicate(self, master_pwd, description, dbname, name, new_name):
         """ handle description parameter."""
         try:
             local_db.add_app(description, new_name)
