@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name' : 'Translate any term',
+    'name' : 'Export non english term to translate',
     'author': 'Soltani charif',
     'version' : '1.0',
     'summary': 'Enable exporting of non english terms to translate.',
