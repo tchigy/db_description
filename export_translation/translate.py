@@ -88,9 +88,12 @@ trans_generate = replace_inner_function(origin_method, push_translation)
 tools.trans_export.func_globals['trans_generate'] = trans_generate
 
 
-from odoo import models
+from odoo import models, fields
 
 class DummyModel(models.AbstractModel):
     """  just a dummy model to check if the module is installed instead of using search method to check
         for every terms that we want to export !!!! """
     _name = 'translate.dummy'
+
+    # checkout this field in translation file
+    name = fields.Char(string=u"حقل للتجريب")
