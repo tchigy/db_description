@@ -44,5 +44,6 @@ if you just want to hide edit in confirmed state just change this:
     'demo': [],
     'data': ['backend_assets.xml'],
     'auto_install': False,
+    'application': True,
     'installable': True,
 }

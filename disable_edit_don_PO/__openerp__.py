@@ -51,5 +51,6 @@ your module is installed after sale module
     ],
     'data': ['backend_assets.xml'],
     'auto_install': False,
+    'application': True,
     'installable': True,
 }
