@@ -38,6 +38,9 @@ if you just want to hide edit in confirmed state just change this:
 """,
     'depends': ['web', 'account'],
     'category': 'web',
+    'images': [
+        'static/src/img/main_screenshot.png'
+    ],
     'demo': [],
     'data': ['backend_assets.xml'],
     'auto_install': False,

@@ -46,6 +46,9 @@ your module is installed after sale module
     'depends': ['web', 'purchase'],
     'category': 'web',
     'demo': [],
+    'images': [
+        'static/src/img/main_screenshot.png'
+    ],
     'data': ['backend_assets.xml'],
     'auto_install': False,
     'installable': True,
