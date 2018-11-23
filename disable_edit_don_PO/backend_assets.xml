@@ -3,7 +3,7 @@
     <data>
         <template id="assets_backend" name="disable edit confirmed PO assets" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
-                <script type="text/javascript" src="/disable_edit_confirmed_po/static/src/js/form_view_disable_edit.js"></script>
+                <script type="text/javascript" src="/disable_edit_don_PO/static/src/js/form_view_disable_edit.js"></script>
             </xpath>
         </template>
     </data>

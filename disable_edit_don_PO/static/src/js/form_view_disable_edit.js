@@ -1,4 +1,4 @@
-openerp.disable_edit_confirmed_po = function(instance, local) {
+openerp.disable_edit_don_PO = function(instance, local) {
     var instance = openerp;
     var FormView = instance.web.FormView;
     console.log('hii');
