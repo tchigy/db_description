@@ -1,7 +1,7 @@
 openerp.disable_edit_don_PO = function(instance, local) {
     var instance = openerp;
     var FormView = instance.web.FormView;
-    console.log('hii');
+
     // override load_record
     FormView.include({
         load_record: function(record) {
@@ -14,7 +14,7 @@ openerp.disable_edit_don_PO = function(instance, local) {
                 }
         }
         // call super
-        return this._super(record);;
+        return this._super(record);
         }
     });
 }
