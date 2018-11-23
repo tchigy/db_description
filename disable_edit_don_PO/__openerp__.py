@@ -18,7 +18,7 @@
 ##############################################################################
 
 {
-    'name': 'Disable Edit on confirmed and cancel PO',
+    'name': 'Disable Edit on done and cancel PO',
     'version': '1.0',
     'author': 'Soltani Charif',
     'website': 'https://www.linkedin.com/in/soltani-charif-b0351811a/',
