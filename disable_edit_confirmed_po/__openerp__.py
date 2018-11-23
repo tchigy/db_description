@@ -22,8 +22,26 @@
     'version': '1.0',
     'author': 'Soltani Charif',
     'website': 'https://www.linkedin.com/in/soltani-charif-b0351811a/',
+    'summary': 'Hide edit button based on Purchase state',
     'description': """
-This hides the edit button on confirmed or canceled PO and SO
+This module disable Edit on Purchase Order in state ['done', 'cancel']
+You can improve this module by playing around with `form_view_disable_edit.js`
+
+You can change the condition of the hidden process for example
+if you just want to hide edit in confirmed state just change this:
+
+   `if (this.model == 'purchase.order' & _.contains(['done', 'cancel'], record.state))`
+
+   To this:
+
+   `if (this.model == 'purchase.order' & record.state == 'done')`
+
+If you want to have this behavior in other modules like sale.order
+
+    `if (_.contains(['purchase.order', 'sale.order'], this.model) & _.contains(['done', 'cancel'], record.state))`
+
+don't forget to add dependency on your addon manifest `__openerp__.py` to make sure that
+your module is installed after sale module
 """,
     'depends': ['web', 'purchase'],
     'category': 'web',
