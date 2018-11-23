@@ -5,7 +5,7 @@ openerp.disable_edit_don_invoice = function(instance, local) {
     // override load_record
     FormView.include({
         load_record: function(record) {
-        // disable only for purchase.order
+        // disable only for account.invoice
         if (record){
             if (this.model == 'account.invoice' & _.contains(['paid', 'cancel'], record.state)){
                     $('button.oe_form_button_edit').hide()
