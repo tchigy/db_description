@@ -1,4 +1,6 @@
-## disable_edit_confirmed_po
+## version 8.0
+
+## disable_edit_don_PO
 
 Is a module to disable Edit on Purchase Order in state ['done', 'cancel']
 You can improve this module by playing around with `form_view_disable_edit.js`
@@ -15,5 +17,10 @@ If you want to have this behavior in other modules like sale.order
 
     `if (   _.contains(['purchase.order', 'sale.order'], this.model) & _.contains(['done', 'cancel'], record.state))`
 
-    don't forget to add dependency on your addon manifest `__openerp__.py` to make sure that
-    your module is installed after sale module
+don't forget to add dependency on your addon manifest `__openerp__.py` to make sure that
+your module is installed after sale module
+
+
+## disable_edit_don_invoice
+
+Have the same behavoir of the previous module but only on invoices.
